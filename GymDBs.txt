@@ -12,6 +12,7 @@ CREATE TABLE Entrenador (
     horario VARCHAR(100)
 );
 
+
 -- =========================================
 -- TABLA: Usuario
 -- =========================================
@@ -33,7 +34,7 @@ CREATE TABLE Usuario (
 CREATE TABLE Sesion (
     id INT AUTO_INCREMENT PRIMARY KEY,
     horario VARCHAR(100),
-    disponibilidad BOOLEAN DEFAULT TRUE
+    FOREIGN KEY (id_Entrenador) REFERENCES Entrenador(id) ON DELETE CASCADE
 );
 
 -- =========================================
@@ -48,23 +49,12 @@ CREATE TABLE PagoMembresia (
 -- =========================================
 -- RELACIÓN: Usuario - Sesion (Asiste)
 -- =========================================
-CREATE TABLE AsisteUsuario (
+CREATE TABLE AsistenciaUsuario (
     id_usuario INT,
-    id_sesion INT,
-    PRIMARY KEY (id_usuario, id_sesion),
+    PRIMARY KEY (id_usuario),
     FOREIGN KEY (id_usuario) REFERENCES Usuario(id) ON DELETE CASCADE,
-    FOREIGN KEY (id_sesion) REFERENCES Sesion(id) ON DELETE CASCADE
-);
-
--- =========================================
--- RELACIÓN: Entrenador - Sesion (Asiste)
--- =========================================
-CREATE TABLE AsisteEntrenador (
-    id_entrenador INT,
-    id_sesion INT,
-    PRIMARY KEY (id_entrenador, id_sesion),
-    FOREIGN KEY (id_entrenador) REFERENCES Entrenador(id) ON DELETE CASCADE,
-    FOREIGN KEY (id_sesion) REFERENCES Sesion(id) ON DELETE CASCADE
+    veces INT VARCHAR (1000),
+    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 -- =========================================

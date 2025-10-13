@@ -2,6 +2,14 @@ CREATE DATABASE IF NOT EXISTS GymDB3;
 USE GymDB3;
 
 -- =========================================
+-- TABLA: HorarioLaboral
+-- =========================================
+CREATE TABLE HorarioLaboral (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    descripcion VARCHAR(100) NOT NULL UNIQUE
+);
+
+-- =========================================
 -- TABLA: Entrenador
 -- =========================================
 CREATE TABLE Entrenador (
@@ -9,9 +17,9 @@ CREATE TABLE Entrenador (
     nombre VARCHAR(100) NOT NULL,
     correo VARCHAR(100) UNIQUE NOT NULL,
     contrasena VARCHAR(255) NOT NULL,
-    horario VARCHAR(100)
+    id_horario_laboral INT,
+    FOREIGN KEY (id_horario_laboral) REFERENCES HorarioLaboral(id) ON DELETE SET NULL
 );
-
 
 -- =========================================
 -- TABLA: Usuario
@@ -29,17 +37,20 @@ CREATE TABLE Usuario (
 );
 
 -- =========================================
--- TABLA: Sesion
+-- TABLA: Sesion (CORRECTED: Changed 'horario' to 'id_horario_plantilla' (INT) and added comma)
 -- =========================================
 CREATE TABLE Sesion (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_Entrenador INT,
-    horario VARCHAR(100),
+    -- Now this column is an INT and links to HorarioLaboral(id)
+    id_horario_plantilla INT NOT NULL, 
+    
+    FOREIGN KEY (id_horario_plantilla) REFERENCES HorarioLaboral(id) ON DELETE CASCADE, -- FIX 1: Corrected data type and added comma
     FOREIGN KEY (id_Entrenador) REFERENCES Entrenador(id) ON DELETE CASCADE
 );
 
 -- =========================================
--- TABLA: TipoPagoMembresia (Renamed for clarity, since the other table is the relationship)
+-- TABLA: TipoPagoMembresia
 -- =========================================
 CREATE TABLE TipoPagoMembresia (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -50,24 +61,18 @@ CREATE TABLE TipoPagoMembresia (
 -- =========================================
 -- RELACIÓN: Usuario - Sesion (Asiste)
 -- =========================================
--- NOTE: Corrected the syntax error 'veces INT VARCHAR (1000)'. Assuming 'veces' should be an INT.
--- Also removed the trailing comma before the closing parenthesis.
 CREATE TABLE AsistenciaUsuario (
     id_usuario INT,
-    id_sesion INT, -- Added id_sesion to link to a specific session
-    veces INT, -- Corrected data type to INT (or use VARCHAR(1000) if you must store a string)
+    id_sesion INT,
+    veces INT,
     fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (id_usuario, id_sesion), -- Composite primary key for the many-to-many relationship
+    PRIMARY KEY (id_usuario, id_sesion),
     FOREIGN KEY (id_usuario) REFERENCES Usuario(id) ON DELETE CASCADE,
     FOREIGN KEY (id_sesion) REFERENCES Sesion(id) ON DELETE CASCADE
 );
 
-
 -- =========================================
--- RELACIÓN: Usuario - PagoMembresia (Realiza)
--- NOTE: The previous table definition was a duplicate of PagoMembresia. 
--- Renamed this relationship table to Usuario_Realiza_Pago to avoid conflict.
--- Assumed id_pago refers to the id in TipoPagoMembresia.
+-- RELACIÓN: Usuario - TipoPagoMembresia (Realiza)
 -- =========================================
 CREATE TABLE Usuario_Realiza_Pago (
     id_usuario INT,

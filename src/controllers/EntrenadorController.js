@@ -1,5 +1,4 @@
-
-import User from "../models/User.js";
+import User from "../models/Entrenador.js"; 
 
 // SELECT * FROM users;
 export const getUsers = async (req, res) => {
@@ -16,22 +15,14 @@ export const getUsers = async (req, res) => {
 export const createUser = async (req, res) => {
   try {
     const { nombre, 
-      correo_electronico, 
-      contrasena,
-      programa,
-      rol,
-      seguro,
-      peso_inicial,
-      tiempo_restante } = req.body;
+      correo,
+      contrasena, 
+      id_horario_laborar } = req.body;
     const newUser = await User.create({ 
       nombre, 
-      correo_electronico, 
-      contrasena,
-      programa,
-      rol,
-      seguro,
-      peso_inicial,
-      tiempo_restante});
+      correo,
+      contrasena, 
+      id_horario_laborar});
     res.status(201).json(newUser);
   } catch (error) {
     res.status(500).json({ error: error.message });

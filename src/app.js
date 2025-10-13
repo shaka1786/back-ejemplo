@@ -5,6 +5,7 @@ import commentRoutes from "./routes/commentRoutes.js";
 import postRoutes from "./routes/postRoutes.js";
 import authRoutes from './routes/authRoutes.js'
 
+
 const app = express();
 
 app.use(express.json());

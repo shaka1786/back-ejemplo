@@ -15,9 +15,23 @@ export const getUsers = async (req, res) => {
 // INSERT INTO users (...)
 export const createUser = async (req, res) => {
   try {
-    const { nombre, correo } = req.body;
-
-    const newUser = await User.create({ nombre, correo });
+    const { nombre, 
+      correo_electronico, 
+      contrasena,
+      programa,
+      rol,
+      seguro,
+      peso_inicial,
+      tiempo_restante } = req.body;
+    const newUser = await User.create({ 
+      nombre, 
+      correo_electronico, 
+      contrasena,
+      programa,
+      rol,
+      seguro,
+      peso_inicial,
+      tiempo_restante});
     res.status(201).json(newUser);
   } catch (error) {
     res.status(500).json({ error: error.message });

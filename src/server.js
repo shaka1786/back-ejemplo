@@ -14,9 +14,11 @@ async function startServer() {
     await sequelize.sync({ alter: true });
     console.log("Modelos Sincronizados");
 
-    app.listen(PORT, () => {
-      console.log(`Servidor ejecuntando en http://localhost:${PORT}`);
-    });
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Servidor ejecutando en http://localhost:${PORT}`);
+});
+
+
   } catch (error) {
     console.error("Error al conectar a la BD", error);
   }

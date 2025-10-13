@@ -1,13 +1,13 @@
 import { Router } from "express";
 
 import { getUsers, updateUser, deleteUser } from "../controllers/EntrenadorController.js";
-import { register } from "../controllers/EntrenadorAuthController.js";
+import { registerEntrenador } from "../controllers/EntrenadorAuthController.js";
 
-const router = Router();
+const routerEntrenador = Router();
 
-router.get("/", getUsers);
-router.post("/", register);
+routerEntrenador.get("/", getUsers);
+routerEntrenador.post("/", registerEntrenador);
 
-router.put("/:id",updateUser)
-router.delete("/:id",deleteUser)
-export default router;
+routerEntrenador.put("/:id", updateUser)
+routerEntrenador.delete("/:id", deleteUser)
+export default routerEntrenador;

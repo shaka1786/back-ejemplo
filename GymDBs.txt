@@ -1,0 +1,80 @@
+CREATE DATABASE IF NOT EXISTS GymDB;
+USE GymDB;
+
+-- =========================================
+-- TABLA: Entrenador
+-- =========================================
+CREATE TABLE Entrenador (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    correo VARCHAR(100) UNIQUE NOT NULL,
+    contrasena VARCHAR(255) NOT NULL,
+    horario VARCHAR(100)
+);
+
+-- =========================================
+-- TABLA: Usuario
+-- =========================================
+CREATE TABLE Usuario (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    correo_electronico VARCHAR(100) UNIQUE NOT NULL,
+    contrasena VARCHAR(255) NOT NULL,
+    programa VARCHAR(100),
+    rol VARCHAR(50),
+    seguro VARCHAR(50),
+    peso_inicial DECIMAL(5,2),
+    tiempo_restante INT
+);
+
+-- =========================================
+-- TABLA: Sesion
+-- =========================================
+CREATE TABLE Sesion (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    horario VARCHAR(100),
+    disponibilidad BOOLEAN DEFAULT TRUE
+);
+
+-- =========================================
+-- TABLA: PagoMembresia
+-- =========================================
+CREATE TABLE PagoMembresia (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    tiempo INT NOT NULL,
+    valor DECIMAL(10,2) NOT NULL
+);
+
+-- =========================================
+-- RELACIÓN: Usuario - Sesion (Asiste)
+-- =========================================
+CREATE TABLE AsisteUsuario (
+    id_usuario INT,
+    id_sesion INT,
+    PRIMARY KEY (id_usuario, id_sesion),
+    FOREIGN KEY (id_usuario) REFERENCES Usuario(id) ON DELETE CASCADE,
+    FOREIGN KEY (id_sesion) REFERENCES Sesion(id) ON DELETE CASCADE
+);
+
+-- =========================================
+-- RELACIÓN: Entrenador - Sesion (Asiste)
+-- =========================================
+CREATE TABLE AsisteEntrenador (
+    id_entrenador INT,
+    id_sesion INT,
+    PRIMARY KEY (id_entrenador, id_sesion),
+    FOREIGN KEY (id_entrenador) REFERENCES Entrenador(id) ON DELETE CASCADE,
+    FOREIGN KEY (id_sesion) REFERENCES Sesion(id) ON DELETE CASCADE
+);
+
+-- =========================================
+-- RELACIÓN: Usuario - PagoMembresia (Realiza)
+-- =========================================
+CREATE TABLE Realiza (
+    id_usuario INT,
+    id_pago INT,
+    fecha_pago DATE DEFAULT (CURRENT_DATE),
+    PRIMARY KEY (id_usuario, id_pago),
+    FOREIGN KEY (id_usuario) REFERENCES Usuario(id) ON DELETE CASCADE,
+    FOREIGN KEY (id_pago) REFERENCES PagoMembresia(id) ON DELETE CASCADE
+);

@@ -1,0 +1,11 @@
+este archivo es para la configuracion a la BD local o la que tengan
+
+nombre del archivo en la reiz principal del proyecto = .env
+
+DB_NAME=GymDB
+DB_USER=gymIUSH
+DB_PASS='KJxErMCh'
+DB_HOST=192.168.1.35
+DB_PORT=3306
+
+JWT_SECRET= 03cc7c4ca4ce1de5a8f2ba221038c7185035fc30fd3602307cfa2567f5f93123

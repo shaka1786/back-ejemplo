@@ -11,14 +11,12 @@ async function startServer() {
     await sequelize.authenticate();
     console.log("Conectado a la BD");
 
-    await sequelize.sync({ alter: true });
+    await sequelize.sync({ alter: false }); //se cambio a fales
     console.log("Modelos Sincronizados");
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Servidor ejecutando en http://localhost:${PORT}`);
-});
-
-
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`Servidor ejecutando en http://localhost:${PORT}`);
+    });
   } catch (error) {
     console.error("Error al conectar a la BD", error);
   }

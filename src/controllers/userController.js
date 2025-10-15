@@ -1,65 +1,59 @@
+//import User from "../models/User.js"; antes
+import Usuario from "../models/User.js";
+import bcrypt from "bcryptjs";
 
-import User from "../models/User.js";
-
-// SELECT * FROM users;
-export const getUsers = async (req, res) => {
+// Crear un nuevo usuario
+export const registrarUsuario = async (req, res) => {
+  console.log("REQ BODY:", req.body); // 👈 Aquí se imprime el cuerpo recibido
   try {
-    //Join de Post
-    const users = await User.findAll({include:Post});
-    res.json(users);
+    const { nombre, correo_electronico, contrasena, programa, id_rol } =
+      req.body;
+
+    // Validaciones simples
+    if (!nombre || !correo_electronico || !contrasena || !id_rol) {
+      return res.status(400).json({ message: "Faltan campos obligatorios" });
+    }
+
+    const existente = await Usuario.findOne({ where: { correo_electronico } });
+
+    if (existente) {
+      return res.status(409).json({ message: "El correo ya está registrado" });
+    }
+
+    // Encriptar contraseña
+    const hash = await bcrypt.hash(contrasena, 10);
+
+    const nuevoUsuario = await Usuario.create({
+      nombre,
+      correo_electronico,
+      contrasena: hash,
+      programa,
+      id_rol,
+    });
+
+    res.status(201).json({
+      message: "Usuario registrado correctamente",
+      usuario: nuevoUsuario,
+    });
+    //} catch (error) {
+    //console.error(error);
+    //res.status(500).json({ message: "Error al registrar usuario", error });
+    //}
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("Error al registrar usuario:", error);
+    res.status(500).json({
+      message: "Error al registrar usuario",
+      error: error.message || error,
+    });
   }
 };
 
-// INSERT INTO users (...)
-export const createUser = async (req, res) => {
+// Obtener todos los usuarios
+export const obtenerUsuarios = async (req, res) => {
   try {
-    const { nombre, 
-      correo_electronico, 
-      contrasena,
-      programa,
-      rol,
-      seguro,
-      peso_inicial,
-      tiempo_restante } = req.body;
-    const newUser = await User.create({ 
-      nombre, 
-      correo_electronico, 
-      contrasena,
-      programa,
-      rol,
-      seguro,
-      peso_inicial,
-      tiempo_restante});
-    res.status(201).json(newUser);
+    const usuarios = await Usuario.findAll();
+    res.json(usuarios);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: "Error al obtener usuarios" });
   }
 };
-
-//UPDATE users Set
-export const updateUser = async(req,res)=>{
-  try{
-    const {id} = req.params;
-    const{nombre,correo} = req.body
-
-    await User.update({nombre,correo},{where:{id}})
-
-    res.json({message:"Usuario actualizado"})
-  }catch(error){
-    res.status(500).json({error: error.message})
-  }
-}
-
-//DELETE FROM users WHERE id=...
-
-export const deleteUser = async (req,res)=>{
-  try{
-    const {id} = req.params;
-    await User.destroy({where:{id}})
-     res.json({message: "Usuario eliminado"})
-  }catch(error){
-    res.status(500).json({error: error.message})
-  }
-}

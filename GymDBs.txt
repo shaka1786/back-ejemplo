@@ -1,5 +1,13 @@
-CREATE DATABASE IF NOT EXISTS GymDB3;
-USE GymDB3;
+CREATE DATABASE IF NOT EXISTS GymDB;
+USE GymDB;
+
+-- =========================================
+-- TABLA: Rol
+-- =========================================
+CREATE TABLE Rol (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL UNIQUE
+);
 
 -- =========================================
 -- TABLA: HorarioLaboral
@@ -7,18 +15,6 @@ USE GymDB3;
 CREATE TABLE HorarioLaboral (
     id INT AUTO_INCREMENT PRIMARY KEY,
     descripcion VARCHAR(100) NOT NULL UNIQUE
-);
-
--- =========================================
--- TABLA: Entrenador
--- =========================================
-CREATE TABLE Entrenador (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL,
-    correo VARCHAR(100) UNIQUE NOT NULL,
-    contrasena VARCHAR(255) NOT NULL,
-    id_horario_laboral INT,
-    FOREIGN KEY (id_horario_laboral) REFERENCES HorarioLaboral(id) ON DELETE SET NULL
 );
 
 -- =========================================
@@ -30,23 +26,25 @@ CREATE TABLE Usuario (
     correo_electronico VARCHAR(100) UNIQUE NOT NULL,
     contrasena VARCHAR(255) NOT NULL,
     programa VARCHAR(100),
-    rol VARCHAR(50),
+    id_rol INT NOT NULL,
+    id_horario_laboral INT NULL,
     seguro VARCHAR(50),
     peso_inicial DECIMAL(5,2),
-    tiempo_restante INT
+    tiempo_restante INT,
+    FOREIGN KEY (id_rol) REFERENCES Rol(id) ON DELETE RESTRICT,
+    FOREIGN KEY (id_horario_laboral) REFERENCES HorarioLaboral(id) ON DELETE SET NULL
 );
 
 -- =========================================
--- TABLA: Sesion (CORRECTED: Changed 'horario' to 'id_horario_plantilla' (INT) and added comma)
+-- TABLA: Sesion
+-- (ahora referenciando Usuario en lugar de Entrenador)
 -- =========================================
 CREATE TABLE Sesion (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    id_Entrenador INT,
-    -- Now this column is an INT and links to HorarioLaboral(id)
-    id_horario_plantilla INT NOT NULL, 
-    
-    FOREIGN KEY (id_horario_plantilla) REFERENCES HorarioLaboral(id) ON DELETE CASCADE, -- FIX 1: Corrected data type and added comma
-    FOREIGN KEY (id_Entrenador) REFERENCES Entrenador(id) ON DELETE CASCADE
+    id_entrenador INT NOT NULL,
+    id_horario_plantilla INT NOT NULL,
+    FOREIGN KEY (id_horario_plantilla) REFERENCES HorarioLaboral(id) ON DELETE CASCADE,
+    FOREIGN KEY (id_entrenador) REFERENCES Usuario(id) ON DELETE CASCADE
 );
 
 -- =========================================

@@ -1,13 +1,15 @@
-import { Router } from "express";
+import { Router  } from "express";
 
-import { getUsers, updateUser, deleteUser } from "../controllers/userController.js";
-import { register } from "../controllers/authController.js";
+import { obtenerUsuarios,registrarUsuario } from "../controllers/userController.js";
 
+// Crear el enrutador
 const router = Router();
 
-router.get("/", getUsers);
-router.post("/", register);
 
-router.put("/:id",updateUser)
-router.delete("/:id",deleteUser)
+
+// Definir rutas
+router.get("/", obtenerUsuarios);
+router.post("/", registrarUsuario);
+
+// Exportar el router
 export default router;

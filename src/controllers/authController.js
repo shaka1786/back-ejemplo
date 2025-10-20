@@ -1,3 +1,4 @@
+
 import bcrypt from "bcryptjs";
 
 import jwt from "jsonwebtoken";
@@ -6,59 +7,23 @@ import User from "../models/User.js";
 
 export const register = async (req, res) => {
   try {
-    const {
-      nombre,
-      correo_electronico,
-      contrasena,
-      programa,
-      rol,
-      seguro,
-      peso_inicial,
-      tiempo_restante,
-    } = req.body;
-
-    // Validación de campos obligatorios
-    if (!nombre || !correo_electronico || !contrasena) {
-      return res.status(400).json({
-        message: "Nombre, correo electrónico y contraseña son requeridos",
-      });
+    const { nombre, correo_electronico, contrasena, programa, id_rol, seguro, peso_inicial, tiempo_restante } = req.body;
+    if (!nombre || !correo_electronico || !contrasena || !id_rol) {
+      return res.status(400).json({ message: "Faltan campos obligatorios" });
     }
-
-    // Verificar si el correo ya existe
     const userExist = await User.findOne({ where: { correo_electronico } });
-
     if (userExist) {
       return res.status(400).json({ message: "El correo ya está registrado" });
     }
-
-    // Hashear la contraseña
     const hashedPassword = await bcrypt.hash(contrasena, 10);
-
-    // Crear el nuevo usuario
     const newUser = await User.create({
-      nombre,
-      correo_electronico,
-      contrasena: hashedPassword,
-      programa,
-      rol,
-      seguro,
-      peso_inicial,
-      tiempo_restante,
+      nombre, correo_electronico, contrasena: hashedPassword, programa, id_rol, seguro, peso_inicial, tiempo_restante
     });
-
-    // Eliminar la contraseña del objeto antes de enviarlo
     const userSafe = newUser.toJSON();
     delete userSafe.contrasena;
-
-    return res.status(201).json({
-      message: "Usuario registrado con éxito",
-      user: userSafe,
-    });
+    res.status(201).json({ message: "Usuario registrado con éxito", user: userSafe });
   } catch (error) {
-    res.status(500).json({
-      message: "Error en el servidor",
-      error: error.message,
-    });
+    res.status(500).json({ message: "Error al registrar usuario", error: error.message });
   }
 };
 
@@ -114,3 +79,6 @@ export const getUsuarios = async (req, res) => {
     res.status(500).json({ message: "Error al obtener usuarios" });
   }
 };
+
+
+//*/

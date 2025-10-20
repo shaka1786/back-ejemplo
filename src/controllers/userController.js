@@ -1,4 +1,5 @@
 //import User from "../models/User.js"; antes
+/*
 import Usuario from "../models/User.js";
 import bcrypt from "bcryptjs";
 
@@ -57,3 +58,4 @@ export const obtenerUsuarios = async (req, res) => {
     res.status(500).json({ message: "Error al obtener usuarios" });
   }
 };
+*/

@@ -1,4 +1,4 @@
-import { Router  } from "express";
+/*import { Router  } from "express";
 
 import { obtenerUsuarios,registrarUsuario } from "../controllers/userController.js";
 
@@ -12,4 +12,4 @@ router.get("/", obtenerUsuarios);
 router.post("/", registrarUsuario);
 
 // Exportar el router
-export default router;
+export default router;*/

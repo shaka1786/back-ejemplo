@@ -3,6 +3,7 @@ import sequelize from "./config/database.js";
 import dotenv from "dotenv";
 
 //import { Rol, HorarioLaboral, Usuario, Sesion, TipoPagoMembresia } from "./models/index.js";
+import "./models/index.js";
 
 dotenv.config();
 

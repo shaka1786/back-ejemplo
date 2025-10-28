@@ -27,4 +27,8 @@ Sesion.belongsToMany(Usuario, { through: "AsistenciaUsuario", foreignKey: "id_se
 Usuario.belongsToMany(TipoPagoMembresia, { through: "Usuario_Realiza_Pago", foreignKey: "id_usuario" });
 TipoPagoMembresia.belongsToMany(Usuario, { through: "Usuario_Realiza_Pago", foreignKey: "id_pago" });
 
+// Asociación: Un Rol tiene muchos Tipos de Membresía
+Rol.hasMany(TipoPagoMembresia, { foreignKey: "id_rol" });
+TipoPagoMembresia.belongsTo(Rol, { foreignKey: "id_rol" });
+
 export { Rol, HorarioLaboral, Usuario, Sesion, TipoPagoMembresia }; 

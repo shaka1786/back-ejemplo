@@ -14,5 +14,6 @@ router.post("/login",login);
 //router.get("/usuarios", getUsuarios); // ← nueva ruta para listar usuarios
 
 router.get("/usuarios", verifyToken, getUsuarios);
+router.delete("/usuarios/:id", verifyToken, eliminarUsuario);
 
 export default router;

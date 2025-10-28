@@ -9,7 +9,6 @@ import asistenciaRoutes from "./routes/asistenciaRoutes.js";
 import pagoRoutes from "./routes/pagoRoutes.js";
 
 const app = express();
-
 // ✅ Middleware para procesar JSON
 app.use(express.json());
 
@@ -26,3 +25,4 @@ app.use("/api/sesiones", sesionRoutes);
 app.use("/api/asistencias", asistenciaRoutes);
 
 app.use("/api/pagos", pagoRoutes);
+

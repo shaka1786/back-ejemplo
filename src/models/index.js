@@ -35,4 +35,11 @@ TipoPagoMembresia.belongsTo(Rol, { foreignKey: "id_rol" });
 Usuario.belongsToMany(TipoPagoMembresia, { through: Usuario_Realiza_Pago, foreignKey: "id_usuario" });
 TipoPagoMembresia.belongsToMany(Usuario, { through: Usuario_Realiza_Pago, foreignKey: "id_pago" });
 
+// Ejemplo para Sesion (entrenador)
+Sesion.belongsTo(Usuario, { foreignKey: "id_entrenador", onDelete: "SET NULL" });
+Usuario.hasMany(Sesion, { foreignKey: "id_entrenador", onDelete: "CASCADE" });
+
+// Para Usuario_Realiza_Pago
+Usuario.hasMany(Usuario_Realiza_Pago, { foreignKey: "id_usuario", onDelete: "CASCADE" });
+
 export { Rol, HorarioLaboral, Usuario, Sesion, TipoPagoMembresia, Usuario_Realiza_Pago };

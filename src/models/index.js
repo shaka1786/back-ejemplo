@@ -5,6 +5,7 @@ import HorarioLaboral from "./HorarioLaboral.js";
 import Usuario from "./User.js"; 
 import Sesion from "./Sesion.js";
 import TipoPagoMembresia from "./TipoPagoMembresia.js";
+import Usuario_Realiza_Pago from "./Usuario_Realiza_Pago.js";
 // Importa junctions si las creas
 
 // Asociaciones
@@ -31,4 +32,7 @@ TipoPagoMembresia.belongsToMany(Usuario, { through: "Usuario_Realiza_Pago", fore
 Rol.hasMany(TipoPagoMembresia, { foreignKey: "id_rol" });
 TipoPagoMembresia.belongsTo(Rol, { foreignKey: "id_rol" });
 
-export { Rol, HorarioLaboral, Usuario, Sesion, TipoPagoMembresia }; 
+Usuario.belongsToMany(TipoPagoMembresia, { through: Usuario_Realiza_Pago, foreignKey: "id_usuario" });
+TipoPagoMembresia.belongsToMany(Usuario, { through: Usuario_Realiza_Pago, foreignKey: "id_pago" });
+
+export { Rol, HorarioLaboral, Usuario, Sesion, TipoPagoMembresia, Usuario_Realiza_Pago };

@@ -27,49 +27,53 @@ export const register = async (req, res) => {
   }
 };
 
+import Rol from "../models/Rol.js"; // Asegúrate de tener esta importación
+
 export const login = async (req, res) => {
   try {
-    const { correo, password } = req.body;
+    const { correo_electronico, password } = req.body; // ← CAMBIO: nombre de campo
 
-    if (!correo || !password) {
-      return res
-        .status(400)
-        .json({ message: "Correo y password son requeridos" });
+    if (!correo_electronico || !password) {
+      return res.status(400).json({ message: "Correo y contraseña requeridos" });
     }
 
-    const user = await User.findOne({ where: { correo } });
+    const user = await User.findOne({
+      where: { correo_electronico }, // ← CAMBIO: nombre de columna
+      include: [{ model: Rol, attributes: ["nombre"] }]
+    });
 
     if (!user) {
       return res.status(400).json({ message: "Usuario no encontrado" });
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-
-    if (!isPasswordValid) {
+    const isValid = await bcrypt.compare(password, user.contrasena); // ← CAMBIO: contrasena
+    if (!isValid) {
       return res.status(401).json({ message: "Contraseña incorrecta" });
     }
 
-    const payload = { id: user.id, correo: user.correo };
+    const payload = {
+      id: user.id,
+      correo_electronico: user.correo_electronico,
+      rol: user.Rol.nombre
+    };
 
-    const token = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" });
 
-    const userSafe = user.toJSON();
-    delete userSafe.password;
-
-    return res.json({
+    res.json({
       message: "Login exitoso",
-      user: userSafe,
       token,
+      user: {
+        id: user.id,
+        nombre: user.nombre,
+        correo_electronico: user.correo_electronico,
+        rol: user.Rol.nombre
+      }
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error en el servidor", error: error.message });
+    console.error("Error en login:", error);
+    res.status(500).json({ message: "Error en el servidor", error: error.message });
   }
 };
-
 export const getUsuarios = async (req, res) => {
   try {
     const usuarios = await User.findAll(); // obtiene todos los usuarios

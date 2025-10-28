@@ -2,7 +2,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
-import Rol from "../models/Rol.js";
+import rol from "../models/Rol.js";
 import Sesion from "../models/Sesion.js";
 import TipoPagoMembresia from "../models/TipoPagoMembresia.js";
 import Usuario_Realiza_Pago from "../models/Usuario_Realiza_Pago.js";
@@ -41,13 +41,15 @@ export const login = async (req, res) => {
 
     const user = await User.findOne({
       where: { correo_electronico },
-      include: [{ model: Rol, attributes: ["nombre"] }]
+      include: [{ model: rol, attributes: ["nombre"] }]
     });
 
     if (!user) {
       return res.status(400).json({ message: "Usuario no encontrado" });
     }
-
+    if (!user.rol || !user.rol.nombre) {
+      return res.status(500).json({ message: "Rol no encontrado para el usuario" });
+    }
     const isValid = await bcrypt.compare(password, user.contrasena);
     if (!isValid) {
       return res.status(401).json({ message: "Contraseña incorrecta" });
@@ -56,7 +58,7 @@ export const login = async (req, res) => {
     const payload = {
       id: user.id,
       correo_electronico: user.correo_electronico,
-      rol: user.Rol.nombre
+      rol: user.rol.nombre
     };
 
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" });
@@ -68,7 +70,7 @@ export const login = async (req, res) => {
         id: user.id,
         nombre: user.nombre,
         correo_electronico: user.correo_electronico,
-        rol: user.Rol.nombre
+        rol: user.rol.nombre
       }
     });
   } catch (error) {
@@ -81,7 +83,7 @@ export const login = async (req, res) => {
 export const getUsuarios = async (req, res) => {
   try {
     const usuarios = await User.findAll({
-      include: [{ model: Rol, attributes: ["nombre"] }]
+      include: [{ model: rol, attributes: ["nombre"] }]
     });
     res.json(usuarios);
   } catch (error) {
@@ -141,6 +143,7 @@ export const realizarPago = async (req, res) => {
     const { id_usuario, id_pago } = req.body;
 
     if (!id_usuario || !id_pago) {
+      await t.rollback();
       return res.status(400).json({ message: "Faltan id_usuario o id_pago" });
     }
 

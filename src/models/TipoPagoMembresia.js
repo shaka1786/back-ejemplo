@@ -25,7 +25,7 @@ export default TipoPagoMembresia;*/
 
 import { DataTypes } from "sequelize";
 import sequelize from "../config/database.js";
-import Rol from "./Rol.js"; // Importa el modelo Rol
+import rol from "./Rol.js"; // Importa el modelo Rol
 
 const TipoPagoMembresia = sequelize.define("TipoPagoMembresia", {
   id: {
@@ -46,7 +46,7 @@ const TipoPagoMembresia = sequelize.define("TipoPagoMembresia", {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: Rol,
+      model: rol,
       key: "id"
     }
   }
@@ -59,7 +59,7 @@ const TipoPagoMembresia = sequelize.define("TipoPagoMembresia", {
 });
 
 // Asociaciones
-TipoPagoMembresia.belongsTo(Rol, { foreignKey: "id_rol" });
-Rol.hasMany(TipoPagoMembresia, { foreignKey: "id_rol" });
+TipoPagoMembresia.belongsTo(rol, { foreignKey: "id_rol" });
+rol.hasMany(TipoPagoMembresia, { foreignKey: "id_rol" });
 
 export default TipoPagoMembresia;

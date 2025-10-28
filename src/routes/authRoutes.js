@@ -2,14 +2,19 @@
 
 import {Router} from 'express';
 
-import { login,register,getUsuarios  } from '../controllers/authController.js';
+import { login,register,getUsuarios,eliminarUsuario  } from '../controllers/authController.js';
 import { verifyToken } from '../middleware/verifyToken.js';
 
 const router = Router();
 
-router.post("/usuarios",register);
 
 router.post("/login",login);
+router.post("/usuarios", verifyToken, (req, res, next) => {
+  if (req.user.rol !== "Admin") {
+    return res.status(403).json({ message: "Acceso denegado: solo Admin puede registrar" });
+  }
+  next();
+}, register);
 
 //router.get("/usuarios", getUsuarios); // ← nueva ruta para listar usuarios
 

@@ -25,7 +25,7 @@ const Usuario_Realiza_Pago = sequelize.define(
   },
   {
     tableName: "Usuario_Realiza_Pago",
-    timestamps: false,
+    timestamps: true,  // ← CAMBIO: Activa timestamps (createdAt y updatedAt)
   }
 );
 

@@ -1,7 +1,6 @@
 import Sesion from "../models/Sesion.js";
 import Usuario from "../models/User.js";
 import HorarioLaboral from "../models/HorarioLaboral.js";
-import Sesion from "../models/Sesion.js";
 
 export const createSesion = async (req, res) => {
   try {

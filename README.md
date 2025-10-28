@@ -43,13 +43,18 @@ Servidor activo en http://localhost:4000
             Método      Ruta    	                Descripción
             GET	        /api/horarios	            Lista los horarios de clases
             GET	/api/tipoMembresia?rol=Estudiante	Devuelve las membresías según el rol
+            POST        /api/auth/usuarios          Registra un nuevo usuario
 
         Rutas Protegidas (requieren JWT válido)
             Método	    Ruta	                    Descripción
+            GET 	    /api/auth/usuarios	        Lista todos los usuarios registrados
+            DELETE	    /api/auth/usuarios/:id	    Elimina un usuario por ID	Admin
             POST	    /api/auth/login	            Inicia sesión y genera un token JWT
             GET	        /api/sesiones	            Lista todas las sesiones creadas
-            POST        /api/sesiones	            Crea una nueva sesión (solo Admin o Entrenador)
+            POST        /api/sesiones	            Crea una nueva sesión (solo Admin)
             POST	    /api/pagos	                Registra un pago de membresía
+            DELETE  	/api/sesiones/:id	        Elimina una sesión por ID	Admin, Entrenador
+            POST	    /api/pagos	Registra un pago y actualiza el tiempo restante de embresía
             POST	    /api/asistencias	        Registra la asistencia de un usuario a una sesión
 🧩 Ejemplos de Uso
     🔐 POST /api/auth/login
@@ -171,6 +176,40 @@ Servidor activo en http://localhost:4000
                 "id_sesion": 1
             }
             }
+
+    Eliminar usuario (Admin)
+        DELETE http://localhost:4000/api/auth/usuarios/5
+        Authorization: Bearer <token_admin>
+
+    Crear sesión (Entrenador o Admin)
+        POST http://localhost:4000/api/sesiones
+        Authorization: Bearer <token_entrenador>
+        Content-Type: application/json
+
+        {
+            "id_entrenador": 2,
+            "id_horario_plantilla": 4
+        }
+
+    Registrar pago (Cualquier usuario autenticado)
+        POST http://localhost:4000/api/pagos
+        Authorization: Bearer <token>
+        Content-Type: application/json
+
+        {
+        "id_usuario": 3,
+        "id_pago": 1
+        }
+
+
+        Respuesta:
+
+        {
+        "message": "Pago realizado y tiempo restante actualizado",
+        "tiempo_agregado": 1,
+        "tiempo_restante": 6
+        }
+
 🧪 Pruebas Rápidas
     Generar token de prueba
     node testToken.js

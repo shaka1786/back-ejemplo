@@ -43,13 +43,13 @@ Servidor activo en http://localhost:4000
             Método      Ruta    	                Descripción
             GET	        /api/horarios	            Lista los horarios de clases
             GET	/api/tipoMembresia?rol=Estudiante	Devuelve las membresías según el rol
-            POST        /api/auth/usuarios          Registra un nuevo usuario
+            POST	    /api/auth/login	            Inicia sesión y genera un token JWT
 
         Rutas Protegidas (requieren JWT válido)
+            POST        /api/auth/usuarios          Registra un nuevo usuario
             Método	    Ruta	                    Descripción
             GET 	    /api/auth/usuarios	        Lista todos los usuarios registrados
             DELETE	    /api/auth/usuarios/:id	    Elimina un usuario por ID	Admin
-            POST	    /api/auth/login	            Inicia sesión y genera un token JWT
             GET	        /api/sesiones	            Lista todas las sesiones creadas
             POST        /api/sesiones	            Crea una nueva sesión (solo Admin)
             POST	    /api/pagos	                Registra un pago de membresía

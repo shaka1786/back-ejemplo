@@ -1,6 +1,8 @@
 
 import { DataTypes } from "sequelize";
 import sequelize from "../config/database.js";
+import rol from "./Rol.js";
+import HorarioLaboral from "./HorarioLaboral.js";
 
 const Usuario = sequelize.define("Usuario", {
   id: {
@@ -41,18 +43,23 @@ const Usuario = sequelize.define("Usuario", {
     type: DataTypes.DECIMAL(5, 2),
     allowNull: true
   },
-  tiempo_restante: {
+  /*tiempo_restante: {
     type: DataTypes.INTEGER,
     allowNull: true
-  }
-}, {
-  tableName: "Usuario",
-  timestamps: false
-},
+  }*/
+ fecha_vencimiento: {
+  type: DataTypes.DATE,
+  allowNull: true,
+  defaultValue: null 
+ }
+}, 
 {
     tableName: "Usuario", // Asegúrate de que el nombre coincida con el de la tabla en la BD
-    timestamps: false // Si tu tabla no tiene columnas createdAt y updatedAt, cambia esto a false
+    timestamps: true // Si tu tabla no tiene columnas createdAt y updatedAt, cambia esto a false
 });
+
+User.belongsTo(rol, {foreignKey: "id_rol"});
+User.belongsTo(HorarioLaboral, {foreignKey: "id_horario_laboral"})
 
 export default Usuario;
 

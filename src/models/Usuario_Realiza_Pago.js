@@ -6,9 +6,14 @@ import TipoPagoMembresia from "./TipoPagoMembresia.js";
 const Usuario_Realiza_Pago = sequelize.define(
   "Usuario_Realiza_Pago",
   {
+    id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true
+  },
     id_usuario: {
       type: DataTypes.INTEGER,
-      primaryKey: true,
+          allowNull: false,
       references: {
         model: Usuario,
         key: "id",
@@ -16,7 +21,7 @@ const Usuario_Realiza_Pago = sequelize.define(
     },
     id_pago: {
       type: DataTypes.INTEGER,
-      primaryKey: true,
+          allowNull: false,
       references: {
         model: TipoPagoMembresia,
         key: "id",

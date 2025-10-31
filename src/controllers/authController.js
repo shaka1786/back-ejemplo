@@ -166,8 +166,14 @@ export const realizarPago = async (req, res) => {
     );
 
     // Sumar tiempo
-    const nuevoTiempo = usuario.tiempo_restante + tipoPago.tiempo;
-    await usuario.update({ tiempo_restante: nuevoTiempo }, { transaction: t });
+    let nuevaFecha;
+    if (usuario.fecha_vencimiento){
+      nuevaFecha= new Date(usuario.fecha_vencimiento)
+
+    }else{
+      nuevaFecha=new Date();
+    }
+    nuevaFecha.setDate //Continuar
 
     await t.commit();
 

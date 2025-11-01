@@ -35,7 +35,7 @@ const usuario = sequelize.define("usuario", {
     type: DataTypes.INTEGER,
     allowNull: true
   },
-  seguro: {
+  eps: {
     type: DataTypes.STRING(50),
     allowNull: true
   },

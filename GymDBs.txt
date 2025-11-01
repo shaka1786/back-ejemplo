@@ -28,7 +28,7 @@ CREATE TABLE Usuario (
     programa VARCHAR(100),
     id_rol INT NOT NULL,
     id_horario_laboral INT NULL,
-    seguro VARCHAR(50),
+    eps VARCHAR(50),
     peso_inicial DECIMAL(5,2),
     fecha_vencimiento INT,
     FOREIGN KEY (id_rol) REFERENCES Rol(id) ON DELETE RESTRICT,

@@ -11,7 +11,7 @@ import sequelize from "../config/database.js"; // Para transacciones
 // ====== REGISTRO ======
 export const register = async (req, res) => {
   try {
-    const { nombre, correo_electronico, contrasena, programa, id_rol, seguro, peso_inicial, fecha_vencimiento } = req.body;
+    const { nombre, correo_electronico, contrasena, programa, id_rol, eps, peso_inicial, fecha_vencimiento } = req.body;
     if (!nombre || !correo_electronico || !contrasena || !id_rol) {
       return res.status(400).json({ message: "Faltan campos obligatorios" });
     }
@@ -21,7 +21,7 @@ export const register = async (req, res) => {
     }
     const hashedPassword = await bcrypt.hash(contrasena, 10);
     const newUser = await User.create({
-      nombre, correo_electronico, contrasena: hashedPassword, programa, id_rol, seguro, peso_inicial, fecha_vencimiento
+      nombre, correo_electronico, contrasena: hashedPassword, programa, id_rol, eps, peso_inicial, fecha_vencimiento
     });
     const userSafe = newUser.toJSON();
     delete userSafe.contrasena;

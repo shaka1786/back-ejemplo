@@ -1,6 +1,6 @@
 📘 Descripción General
 
-    Esta API permite la gestión integral de un gimnasio, incluyendo administración de usuarios, membresías, roles, horarios, sesiones, pagos y asistencias, todo bajo un sistema seguro de autenticación JWT.
+    Esta API permite la gestión integral de un gimnasio, incluyendo administración de usuarios, membresías, roles, horarios, sesiones, pagos y asistencias, todo bajo un sistema eps de autenticación JWT.
 
 Características principales:
 

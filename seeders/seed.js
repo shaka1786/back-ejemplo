@@ -16,7 +16,7 @@ async function seed() {
     await sequelize.query('SET FOREIGN_KEY_CHECKS = 0');
 await sequelize.drop();
 await sequelize.query('SET FOREIGN_KEY_CHECKS = 1');
-await sequelize.sync({ force: true });
+await sequelize.sync({ alter: true });
 
     console.log("Tablas sincronizadas");
 
@@ -95,7 +95,7 @@ const rolMap = {};
       id_rol: rolMap["Admin"],
       id_horario_laboral: 1,
       programa: "Administración",
-      seguro: "Ninguno",
+      eps: "Ninguno",
       peso_inicial: 0,
       fecha_vencimiento: null
     });

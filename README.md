@@ -207,7 +207,7 @@ Servidor activo en http://localhost:4000
         {
         "message": "Pago realizado y tiempo restante actualizado",
         "tiempo_agregado": 1,
-        "tiempo_restante": 6
+        "fecha_vencimiento": 6
         }
 
 🧪 Pruebas Rápidas

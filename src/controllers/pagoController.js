@@ -13,46 +13,42 @@ export const realizarPago = async (req, res) => {
       return res.status(400).json({ message: "Faltan id_usuario o id_pago" });
     }
 
-    // Buscar usuario y tipo de pago en una sola transacción
-    const [usuario, tipoPago] = await Promise.all([
-      Usuario.findByPk(id_usuario, { transaction: t }),
-      TipoPagoMembresia.findByPk(id_pago, { transaction: t })
-    ]);
-
+    const usuario = await Usuario.findByPk(id_usuario, { transaction: t });
     if (!usuario) {
       await t.rollback();
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
 
+    const tipoPago = await TipoPagoMembresia.findByPk(id_pago, { transaction: t });
     if (!tipoPago) {
       await t.rollback();
       return res.status(404).json({ message: "Tipo de pago no encontrado" });
     }
 
-    // Crear pago dentro de la transacción
-    const pago = await Usuario_Realiza_Pago.create(
-      { id_usuario, id_pago },
-      { transaction: t }
-    );
+    // Registrar pago
+    await Usuario_Realiza_Pago.create({ id_usuario, id_pago }, { transaction: t });
 
-    // Actualizar tiempo_restante (dentro de la transacción)
-    await Usuario.increment("tiempo_restante", {
-      by: tipoPago.tiempo,
-      where: { id: id_usuario },
-      transaction: t
-    });
+    // Calcular nueva fecha_vencimiento
+    let nuevaFecha = usuario.fecha_vencimiento ? new Date(usuario.fecha_vencimiento) : new Date();
+    nuevaFecha.setDate(nuevaFecha.getDate() + tipoPago.tiempo);  // Suma días (tiempo en días)
+    console.log("Nueva fecha calculada:", nuevaFecha);  // Debug en consola de VS Code
 
-    // Confirmar todo
+    // Actualizar usuario
+    await usuario.update({ fecha_vencimiento: nuevaFecha }, { transaction: t });
+
     await t.commit();
 
-    // Obtener tiempo actualizado
+    // Refrescar usuario para obtener valor actualizado
     const usuarioActualizado = await Usuario.findByPk(id_usuario);
-    
+
     res.status(201).json({
-      message: "Pago realizado y tiempo restante actualizado",
-      pago,
+      message: "Pago realizado y fecha de vencimiento actualizada",
+      pago: {
+        id_usuario,
+        id_pago
+      },
       tiempo_agregado: tipoPago.tiempo,
-      tiempo_restante: usuarioActualizado.tiempo_restante
+      fecha_vencimiento: usuarioActualizado.fecha_vencimiento
     });
   } catch (error) {
     await t.rollback();

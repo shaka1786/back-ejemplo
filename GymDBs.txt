@@ -30,7 +30,7 @@ CREATE TABLE Usuario (
     id_horario_laboral INT NULL,
     seguro VARCHAR(50),
     peso_inicial DECIMAL(5,2),
-    tiempo_restante INT,
+    fecha_vencimiento INT,
     FOREIGN KEY (id_rol) REFERENCES Rol(id) ON DELETE RESTRICT,
     FOREIGN KEY (id_horario_laboral) REFERENCES HorarioLaboral(id) ON DELETE SET NULL
 );

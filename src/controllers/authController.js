@@ -11,7 +11,7 @@ import sequelize from "../config/database.js"; // Para transacciones
 // ====== REGISTRO ======
 export const register = async (req, res) => {
   try {
-    const { nombre, correo_electronico, contrasena, programa, id_rol, seguro, peso_inicial, tiempo_restante } = req.body;
+    const { nombre, correo_electronico, contrasena, programa, id_rol, seguro, peso_inicial, fecha_vencimiento } = req.body;
     if (!nombre || !correo_electronico || !contrasena || !id_rol) {
       return res.status(400).json({ message: "Faltan campos obligatorios" });
     }
@@ -21,7 +21,7 @@ export const register = async (req, res) => {
     }
     const hashedPassword = await bcrypt.hash(contrasena, 10);
     const newUser = await User.create({
-      nombre, correo_electronico, contrasena: hashedPassword, programa, id_rol, seguro, peso_inicial, tiempo_restante
+      nombre, correo_electronico, contrasena: hashedPassword, programa, id_rol, seguro, peso_inicial, fecha_vencimiento
     });
     const userSafe = newUser.toJSON();
     delete userSafe.contrasena;
@@ -173,14 +173,14 @@ export const realizarPago = async (req, res) => {
     }else{
       nuevaFecha=new Date();
     }
-    nuevaFecha.setDate //Continuar
-
+    nuevaFecha.setDate(nuevaFecha.getDate() + tipoPago.tiempo);
+    await usuario.update({ fecha_vencimiento: nuevaFecha }, { transaction: t });
     await t.commit();
 
     res.status(201).json({
       message: "Pago realizado y tiempo actualizado",
       tiempo_agregado: tipoPago.tiempo,
-      tiempo_restante: nuevoTiempo
+      fecha_vencimiento: nuevoTiempo
     });
   } catch (error) {
     await t.rollback();

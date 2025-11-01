@@ -1,4 +1,7 @@
+import dotenv from "dotenv";
+dotenv.config({ path: '../.env' });
 import sequelize from "../src/config/database.js";
+
 import Rol from "../src/models/Rol.js";
 import TipoPagoMembresia from "../src/models/TipoPagoMembresia.js";
 import Usuario from "../src/models/User.js"; // Ajusta si es User.js o Usuario.js
@@ -7,6 +10,8 @@ import bcrypt from "bcryptjs";
 
 async function seed() {
   try {
+    console.log("JWT_SECRET cargado:", process.env.JWT_SECRET ? "Sí" : "No");  // Debug
+    console.log("DB_USER cargado:", process.env.DB_USER ? "Sí" : "No");  // Debug
     // Forzar recreación de tablas para desarrollo (cuidado: elimina datos existentes)
     await sequelize.sync({ alter: true });
     console.log("Tablas sincronizadas");
@@ -88,7 +93,7 @@ const rolMap = {};
       programa: "Administración",
       seguro: "Ninguno",
       peso_inicial: 0,
-      tiempo_restante: 0
+      fecha_vencimiento: null
     });
     console.log("Usuario Admin insertado");
 

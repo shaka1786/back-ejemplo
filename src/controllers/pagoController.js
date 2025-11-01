@@ -6,7 +6,7 @@ import Usuario from "../models/User.js";
 export const realizarPago = async (req, res) => {
   const t = await sequelize.transaction();
   try {
-    const { id_usuario, id_pago } = req.body;
+    const { id_usuario, id_pago, descripcion } = req.body;
 
     if (!id_usuario || !id_pago) {
       await t.rollback();
@@ -24,14 +24,15 @@ export const realizarPago = async (req, res) => {
       await t.rollback();
       return res.status(404).json({ message: "Tipo de pago no encontrado" });
     }
+    
+
 
     // Registrar pago
-    await Usuario_Realiza_Pago.create({ id_usuario, id_pago }, { transaction: t });
+    const pago = await Usuario_Realiza_Pago.create({ id_usuario, id_pago, descripcion }, { transaction: t });
 
     // Calcular nueva fecha_vencimiento
     let nuevaFecha = usuario.fecha_vencimiento ? new Date(usuario.fecha_vencimiento) : new Date();
-    nuevaFecha.setDate(nuevaFecha.getDate() + tipoPago.tiempo);  // Suma días (tiempo en días)
-    console.log("Nueva fecha calculada:", nuevaFecha);  // Debug en consola de VS Code
+    nuevaFecha.setDate(nuevaFecha.getDate() + tipoPago.tiempo);
 
     // Actualizar usuario
     await usuario.update({ fecha_vencimiento: nuevaFecha }, { transaction: t });
@@ -39,16 +40,13 @@ export const realizarPago = async (req, res) => {
     await t.commit();
 
     // Refrescar usuario para obtener valor actualizado
-    const usuarioActualizado = await Usuario.findByPk(id_usuario);
+    await usuario.reload();
 
     res.status(201).json({
       message: "Pago realizado y fecha de vencimiento actualizada",
-      pago: {
-        id_usuario,
-        id_pago
-      },
+      pago,
       tiempo_agregado: tipoPago.tiempo,
-      fecha_vencimiento: usuarioActualizado.fecha_vencimiento
+      fecha_vencimiento: usuario.fecha_vencimiento
     });
   } catch (error) {
     await t.rollback();

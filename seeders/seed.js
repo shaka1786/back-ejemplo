@@ -4,7 +4,7 @@ import sequelize from "../src/config/database.js";
 
 import Rol from "../src/models/Rol.js";
 import TipoPagoMembresia from "../src/models/TipoPagoMembresia.js";
-import Usuario from "../src/models/User.js"; // Ajusta si es User.js o Usuario.js
+import usuario from "../src/models/User.js"; // Ajusta si es User.js o Usuario.js
 import HorarioLaboral from "../src/models/HorarioLaboral.js";
 import bcrypt from "bcryptjs";
 
@@ -13,7 +13,11 @@ async function seed() {
     console.log("JWT_SECRET cargado:", process.env.JWT_SECRET ? "Sí" : "No");  // Debug
     console.log("DB_USER cargado:", process.env.DB_USER ? "Sí" : "No");  // Debug
     // Forzar recreación de tablas para desarrollo (cuidado: elimina datos existentes)
-    await sequelize.sync({ alter: true });
+    await sequelize.query('SET FOREIGN_KEY_CHECKS = 0');
+await sequelize.drop();
+await sequelize.query('SET FOREIGN_KEY_CHECKS = 1');
+await sequelize.sync({ force: true });
+
     console.log("Tablas sincronizadas");
 
 /* Insertar Roles 
@@ -84,7 +88,7 @@ const rolMap = {};
 
     // 4. Admin
     const hashed = await bcrypt.hash("admin123", 10);
-    await Usuario.create({
+    await usuario.create({
       nombre: "Admin Gym",
       correo_electronico: "admin@gym.com",
       contrasena: hashed,

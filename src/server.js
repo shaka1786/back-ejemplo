@@ -14,7 +14,7 @@ async function startServer() {
     await sequelize.authenticate();
     console.log("Conectado a la BD");
 
-    await sequelize.sync({ alter: true }); //se cambio a force para que cree/actualice tablas. Esto borra datos, entonces en produccion debe ser false
+    await sequelize.sync({ force: true }); //se cambio a force para que cree/actualice tablas. Esto borra datos, entonces en produccion debe ser false
     console.log("Modelos Sincronizados");
 
     app.listen(PORT, "0.0.0.0", () => {

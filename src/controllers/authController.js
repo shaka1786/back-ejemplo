@@ -50,7 +50,7 @@ export const register = async (req, res) => {
 // ====== OBTENER ROLES (nuevo endpoint para lista desplegable) ======
 export const getRoles = async (req, res) => {
   try {
-    const roles = await Rol.findAll({ attributes: ['id', 'nombre'] });
+    const roles = await rol.findAll({ attributes: ['id', 'nombre'] });
     res.json(roles);
   } catch (error) {
     res.status(500).json({ message: "Error al obtener roles", error: error.message });

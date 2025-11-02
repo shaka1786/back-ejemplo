@@ -3,18 +3,38 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import rol from "../models/Rol.js";
+import "../models/index.js";
 import Sesion from "../models/Sesion.js";
 import TipoPagoMembresia from "../models/TipoPagoMembresia.js";
 import Usuario_Realiza_Pago from "../models/Usuario_Realiza_Pago.js";
 import sequelize from "../config/database.js"; // Para transacciones
+// Asegúrate de importar los modelos necesarios para las asociaciones (aunque index.js debería manejarlas si se carga primero)
 
 // ====== REGISTRO ======
 export const register = async (req, res) => {
+    // 💡 CAMBIO CRUCIAL: Usamos 'let' para poder reasignar valores (limpieza de datos)
+    let { 
+        nombre, 
+        apellido, 
+        email, 
+        password, 
+        id_rol, 
+        programa, 
+        id_horarios,
+        // Agrega aquí todas las demás variables (ej. eps, peso_inicial) si las usas
+        fecha_vencimiento = null
+    } = req.body; 
+    let t;
+    // ...
+    // ...
   try {
-    const { nombre, correo_electronico, contrasena, programa, id_rol, eps, peso_inicial, id_horario_laboral, fecha_vencimiento = null } = req.body;
-    
+    t = await sequelize.transaction();
+    let { nombre, correo_electronico, contrasena, programa, id_rol, eps, peso_inicial, id_horarios, fecha_vencimiento = null } = req.body; // <-- Cambiado a let
+    id_rol = Number(id_rol);
+// ...
     // Validaciones obligatorias
     if (!nombre || !correo_electronico || !contrasena || !id_rol) {
+      await t.rollback();
       return res.status(400).json({ message: "Faltan campos obligatorios: nombre, correo_electronico, contrasena, id_rol" });
     }
     
@@ -22,31 +42,51 @@ export const register = async (req, res) => {
     if (id_rol === 2 && !programa) { // Estudiante requiere programa
       return res.status(400).json({ message: "Programa académico es requerido para Estudiantes" });
     }
-    if (id_rol === 7 && !id_horario_laboral) { // Entrenador requiere id_horario_laboral
-      return res.status(400).json({ message: "Horario laboral es requerido para Entrenadores" });
+    if (id_rol === 7 && (!id_horarios || !Array.isArray(id_horarios) || id_horarios.length === 0)) {
+      await t.rollback();
+      return res.status(400).json({ message: "Horario laboral (id_horarios) es requerido como array para Entrenadores" });
     }
     
     // Validar que id_rol sea uno de los permitidos (1-7)
     if (![1, 2, 3, 4, 5, 6, 7].includes(id_rol)) {
       return res.status(400).json({ message: "id_rol inválido. Debe ser entre 1 y 7" });
     }
-    
+    if (id_rol !== 2 || !programa) {
+             programa = null;
+        }
+    if (id_rol !== 7) {
+       id_horarios = []; // Asegurarse que no se procese si no es Entrenador
+    }
+
     const userExist = await User.findOne({ where: { correo_electronico } });
     if (userExist) {
       return res.status(400).json({ message: "El correo ya está registrado" });
     }
     const hashedPassword = await bcrypt.hash(contrasena, 10);
     const newUser = await User.create({
-      nombre, correo_electronico, contrasena: hashedPassword, programa, id_rol, eps, peso_inicial, fecha_vencimiento, id_horario_laboral
-    });
+      nombre, correo_electronico, contrasena: hashedPassword, programa, id_rol, eps, peso_inicial, fecha_vencimiento
+      // La columna id_horario_laboral ya no existe [cf. 41]
+    }, { transaction: t });
     const userSafe = newUser.toJSON();
     delete userSafe.contrasena;
+    if (id_rol === 7 && id_horarios.length > 0) {
+      // Sequelize nos da este método "setHorarios" gracias al alias "as: 'horarios'"
+      await newUser.setHorarios(id_horarios, { transaction: t });
+    }
+
+    await t.commit(); // Confirmar la transacción
+
     res.status(201).json({ message: "Usuario registrado con éxito", user: userSafe });
   } catch (error) {
-    res.status(500).json({ message: "Error al registrar usuario", error: error.message });
-  }
+        // 🚨 CAMBIO CRUCIAL: Muestra el mensaje de error real de la DB
+        console.error("Error al registrar usuario:", error);
+        return res.status(500).json({ 
+            message: "Error interno del servidor. Revisar logs para detalles.",
+            // 💡 Esta línea te devolverá el mensaje de error exacto de la base de datos (p. ej., "NOT NULL constraint failed")
+            db_error_detail: error.message 
+        });
+    }
 };
-
 // ====== OBTENER ROLES (nuevo endpoint para lista desplegable) ======
 export const getRoles = async (req, res) => {
   try {
@@ -223,6 +263,7 @@ export const realizarPago = async (req, res) => {
       fecha_vencimiento: nuevoTiempo
     });
   } catch (error) {
+    console.error("Error al registrar usuario:", error);
     await t.rollback();
     console.error("Error en pago:", error);
     res.status(500).json({ message: "Error en el servidor", error: error.message });

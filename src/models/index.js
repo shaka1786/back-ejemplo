@@ -6,14 +6,25 @@ import Usuario from "./User.js";
 import Sesion from "./Sesion.js";
 import TipoPagoMembresia from "./TipoPagoMembresia.js";
 import Usuario_Realiza_Pago from "./Usuario_Realiza_Pago.js";
+import EntrenadorHorario from "./EntrenadorHorario.js"
 // Importa junctions si las creas
 
 // Asociaciones
 Usuario.belongsTo(Rol, { foreignKey: "id_rol" });
 Rol.hasMany(Usuario, { foreignKey: "id_rol" });
 
-Usuario.belongsTo(HorarioLaboral, { foreignKey: "id_horario_laboral" });
-HorarioLaboral.hasMany(Usuario, { foreignKey: "id_horario_laboral" });
+Usuario.belongsToMany(HorarioLaboral, {
+  through: EntrenadorHorario,
+  foreignKey: "id_usuario", // Clave en la tabla join que apunta a Usuario
+  otherKey: "id_horario",   // Clave en la tabla join que apunta a HorarioLaboral
+  as: "horarios" // Nombre del alias para consultar
+});
+HorarioLaboral.belongsToMany(Usuario, {
+  through: EntrenadorHorario,
+  foreignKey: "id_horario",
+  otherKey: "id_usuario",
+  as: "entrenadores"
+});
 
 Sesion.belongsTo(Usuario, { foreignKey: "id_entrenador", as: "Entrenador" });
 Usuario.hasMany(Sesion, { foreignKey: "id_entrenador", as: "SesionesEntrenadas" });
@@ -52,4 +63,4 @@ Usuario.hasMany(Sesion, { foreignKey: "id_entrenador", onDelete: "CASCADE" });
 
 Usuario.hasMany(Usuario_Realiza_Pago, { foreignKey: "id_usuario", onDelete: "CASCADE" });
 
-export { Rol, HorarioLaboral, Usuario, Sesion, TipoPagoMembresia, Usuario_Realiza_Pago };
+export { Rol, HorarioLaboral, Usuario, Sesion, TipoPagoMembresia, Usuario_Realiza_Pago, EntrenadorHorario };

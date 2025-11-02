@@ -2,7 +2,6 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/database.js";
 import rol from "./Rol.js";
-import HorarioLaboral from "./HorarioLaboral.js";
 
 const usuario = sequelize.define("usuario", {
   id: {
@@ -31,10 +30,6 @@ const usuario = sequelize.define("usuario", {
     type: DataTypes.INTEGER,
     allowNull: false
   },
-  id_horario_laboral: {
-    type: DataTypes.INTEGER,
-    allowNull: true
-  },
   eps: {
     type: DataTypes.STRING(50),
     allowNull: true
@@ -59,6 +54,6 @@ const usuario = sequelize.define("usuario", {
 });
 
 usuario.belongsTo(rol, {foreignKey: "id_rol"});
-usuario.belongsTo(HorarioLaboral, {foreignKey: "id_horario_laboral"})
+
 
 export default usuario;

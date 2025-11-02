@@ -110,3 +110,5 @@ const rolMap = {};
 }
 
 seed();
+
+//C:\Users\Aqua\Desktop\Tareas\API_Gym\back-ejemplo

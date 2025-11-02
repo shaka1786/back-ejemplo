@@ -65,17 +65,31 @@ export const login = async (req, res) => {
 
     res.json({
       message: "Login exitoso",
-      token,
-      user: {
-        id: user.id,
-        nombre: user.nombre,
-        correo_electronico: user.correo_electronico,
-        rol: user.rol.nombre
-      }
+      token
     });
   } catch (error) {
     console.error("Error en login:", error);
     res.status(500).json({ message: "Error en el servidor", error: error.message });
+  }
+};
+
+// GET /api/auth/me - Devuelve details del user autenticado
+export const getCurrentUser = async (req, res) => {
+  try {
+    const user = await User.findByPk(req.user.id, {  // req.user viene de verifyToken middleware
+      include: [{ model: rol, attributes: ["nombre"] }]
+    });
+    if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+
+    res.json({
+      id: user.id,
+      nombre: user.nombre,
+      correo_electronico: user.correo_electronico,
+      rol: user.rol.nombre
+      // Agrega más fields si necesitas, pero solo los esenciales
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error al obtener usuario", error: error.message });
   }
 };
 

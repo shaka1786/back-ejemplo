@@ -2,7 +2,7 @@
 
 import {Router} from 'express';
 
-import { login,register,getUsuarios,eliminarUsuario  } from '../controllers/authController.js';
+import { login,register,getUsuarios,eliminarUsuario,getCurrentUser  } from '../controllers/authController.js';
 import { verifyToken } from '../middleware/verifyToken.js';
 
 const router = Router();
@@ -20,5 +20,6 @@ router.post("/usuarios", verifyToken, (req, res, next) => {
 
 router.get("/usuarios", verifyToken, getUsuarios);
 router.delete("/usuarios/:id", verifyToken, eliminarUsuario);
+router.get("/me", verifyToken, getCurrentUser);
 
 export default router;

@@ -1,7 +1,7 @@
 
 
 import {Router} from 'express';
-import { login,register,getUsuarios,eliminarUsuario,getCurrentUser  } from '../controllers/authController.js';
+import { login,register,getUsuarios,eliminarUsuario,getCurrentUser,getRoles  } from '../controllers/authController.js';
 import { verifyToken } from '../middleware/verifyToken.js';
 
 const router = Router();

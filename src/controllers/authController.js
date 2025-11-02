@@ -11,23 +11,49 @@ import sequelize from "../config/database.js"; // Para transacciones
 // ====== REGISTRO ======
 export const register = async (req, res) => {
   try {
-    const { nombre, correo_electronico, contrasena, programa, id_rol, eps, peso_inicial, fecha_vencimiento } = req.body;
+    const { nombre, correo_electronico, contrasena, programa, id_rol, eps, peso_inicial, id_horario_laboral, fecha_vencimiento = null } = req.body;
+    
+    // Validaciones obligatorias
     if (!nombre || !correo_electronico || !contrasena || !id_rol) {
-      return res.status(400).json({ message: "Faltan campos obligatorios" });
+      return res.status(400).json({ message: "Faltan campos obligatorios: nombre, correo_electronico, contrasena, id_rol" });
     }
+    
+    // Validaciones condicionales
+    if (id_rol === 2 && !programa) { // Estudiante requiere programa
+      return res.status(400).json({ message: "Programa académico es requerido para Estudiantes" });
+    }
+    if (id_rol === 7 && !id_horario_laboral) { // Entrenador requiere id_horario_laboral
+      return res.status(400).json({ message: "Horario laboral es requerido para Entrenadores" });
+    }
+    
+    // Validar que id_rol sea uno de los permitidos (1-7)
+    if (![1, 2, 3, 4, 5, 6, 7].includes(id_rol)) {
+      return res.status(400).json({ message: "id_rol inválido. Debe ser entre 1 y 7" });
+    }
+    
     const userExist = await User.findOne({ where: { correo_electronico } });
     if (userExist) {
       return res.status(400).json({ message: "El correo ya está registrado" });
     }
     const hashedPassword = await bcrypt.hash(contrasena, 10);
     const newUser = await User.create({
-      nombre, correo_electronico, contrasena: hashedPassword, programa, id_rol, eps, peso_inicial, fecha_vencimiento
+      nombre, correo_electronico, contrasena: hashedPassword, programa, id_rol, eps, peso_inicial, fecha_vencimiento, id_horario_laboral
     });
     const userSafe = newUser.toJSON();
     delete userSafe.contrasena;
     res.status(201).json({ message: "Usuario registrado con éxito", user: userSafe });
   } catch (error) {
     res.status(500).json({ message: "Error al registrar usuario", error: error.message });
+  }
+};
+
+// ====== OBTENER ROLES (nuevo endpoint para lista desplegable) ======
+export const getRoles = async (req, res) => {
+  try {
+    const roles = await Rol.findAll({ attributes: ['id', 'nombre'] });
+    res.json(roles);
+  } catch (error) {
+    res.status(500).json({ message: "Error al obtener roles", error: error.message });
   }
 };
 

@@ -1,13 +1,13 @@
 
 
 import {Router} from 'express';
-
 import { login,register,getUsuarios,eliminarUsuario,getCurrentUser  } from '../controllers/authController.js';
 import { verifyToken } from '../middleware/verifyToken.js';
 
 const router = Router();
 
 
+router.get("/roles", verifyToken, getRoles); // Nueva ruta para roles
 router.post("/login",login);
 router.post("/usuarios", verifyToken, (req, res, next) => {
   if (req.user.rol !== "Admin") {

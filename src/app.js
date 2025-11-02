@@ -34,9 +34,8 @@ app.use(express.json());
 
 // Rutas
 //app.use("/api/users", userRoutes);
-app.use("/api/auth", authRoutes);
+app.use("/api", authRoutes);
 app.use("/api/tipoMembresia", tipoMembresiaRoutes);
-export default app;
 
 app.use("/api/horarios", horarioRoutes);
 
@@ -47,10 +46,11 @@ app.use("/api/asistencias", asistenciaRoutes);
 app.use("/api/pagos", pagoRoutes);
 
 sequelize.authenticate()
-  .then(() => {
+.then(() => {
     console.log("Conexión a la BD exitosa");
     app.listen(PORT, () => {
-      console.log(`Servidor corriendo en puerto ${PORT}`);
+        console.log(`Servidor corriendo en puerto ${PORT}`);
     });
-  })
-  .catch(err => console.error("Error conectando a la BD:", err));
+})
+.catch(err => console.error("Error conectando a la BD:", err));
+export default app;

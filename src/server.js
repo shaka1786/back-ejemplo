@@ -7,7 +7,7 @@ import sequelize from "./config/database.js";
 import "./models/index.js";
 
 
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 3000;
 
 async function startServer() {
   try {

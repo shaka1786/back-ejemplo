@@ -101,10 +101,13 @@ export const getRoles = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { correo_electronico, password } = req.body;
+
+    // 🟡 Validación básica
     if (!correo_electronico || !password) {
       return res.status(400).json({ message: "Correo y contraseña requeridos" });
     }
 
+    // 🔍 Buscar usuario por correo
     const user = await User.findOne({
       where: { correo_electronico },
       include: [{ model: rol, attributes: ["nombre"] }]
@@ -113,26 +116,40 @@ export const login = async (req, res) => {
     if (!user) {
       return res.status(400).json({ message: "Usuario no encontrado" });
     }
+
     if (!user.rol || !user.rol.nombre) {
       return res.status(500).json({ message: "Rol no encontrado para el usuario" });
     }
+
+    // 🔑 Validar contraseña
     const isValid = await bcrypt.compare(password, user.contrasena);
     if (!isValid) {
       return res.status(401).json({ message: "Contraseña incorrecta" });
     }
 
+    // 🧩 Crear payload para el JWT
     const payload = {
       id: user.id,
       correo_electronico: user.correo_electronico,
       rol: user.rol.nombre
     };
 
+    // 🔐 Crear token con clave secreta del .env
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" });
 
+    // 🟢 Respuesta final al frontend
     res.json({
       message: "Login exitoso",
-      token
+      token, // el JWT
+      user: {
+        id: user.id,
+        nombre: user.nombre,
+        correo_electronico: user.correo_electronico,
+        rol: user.rol.nombre,
+        fecha_vencimiento: user.fecha_vencimiento
+      }
     });
+
   } catch (error) {
     console.error("Error en login:", error);
     res.status(500).json({ message: "Error en el servidor", error: error.message });

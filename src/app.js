@@ -10,10 +10,9 @@ import sequelize from "./config/database.js";  // Tu conexión a la BD
 import authRoutes from "./routes/authRoutes.js";
 import tipoMembresiaRoutes from "./routes/tipoMembresiaRoutes.js";
 import horarioRoutes from "./routes/horarioRoutes.js";
-import sesionRoutes from "./routes/sesionRoutes.js";
 import asistenciaRoutes from "./routes/asistenciaRoutes.js";
 import pagoRoutes from "./routes/pagoRoutes.js";
-
+import entrenadorRoutes from './routes/entrenadorRoutes.js';
 dotenv.config();
 
 const app = express();
@@ -39,12 +38,10 @@ app.use("/api/tipoMembresia", tipoMembresiaRoutes);
 
 app.use("/api/horarios", horarioRoutes);
 
-app.use("/api/sesiones", sesionRoutes);
-
 app.use("/api/asistencias", asistenciaRoutes);
 
 app.use("/api/pagos", pagoRoutes);
-
+app.use('/api/entrenador', entrenadorRoutes);
 sequelize.authenticate()
 .then(() => {
     console.log("Conexión a la BD exitosa");

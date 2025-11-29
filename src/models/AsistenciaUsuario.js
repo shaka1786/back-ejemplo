@@ -2,17 +2,26 @@ import { DataTypes } from "sequelize";
 import sequelize from "../config/database.js";
 
 const AsistenciaUsuario = sequelize.define("AsistenciaUsuario", {
-  id_usuario: {
+  id: { 
     type: DataTypes.INTEGER,
+    autoIncrement: true,
     primaryKey: true
   },
-  id_sesion: {
+  id_usuario: { 
     type: DataTypes.INTEGER,
-    primaryKey: true
+    allowNull: false
+  },
+  id_entrenador: { 
+    type: DataTypes.INTEGER,
+    allowNull: false
+  },
+  id_horario: { 
+    type: DataTypes.INTEGER,
+    allowNull: false
   },
   veces: {
     type: DataTypes.INTEGER,
-    allowNull: true // Asumiendo nullable si no especificado
+    defaultValue: 1
   },
   fecha_actualizacion: {
     type: DataTypes.DATE,

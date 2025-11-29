@@ -1,23 +1,21 @@
-//Esta parte la cree para hacer las asociaciones entre los modelos
-// (son basicamente las fk)
 import Rol from "./Rol.js";
 import HorarioLaboral from "./HorarioLaboral.js";
-import Usuario from "./User.js"; 
-import Sesion from "./Sesion.js";
+import Usuario from "./User.js";
 import TipoPagoMembresia from "./TipoPagoMembresia.js";
 import Usuario_Realiza_Pago from "./Usuario_Realiza_Pago.js";
-import EntrenadorHorario from "./EntrenadorHorario.js"
-// Importa junctions si las creas
+import EntrenadorHorario from "./EntrenadorHorario.js";
+import AsistenciaUsuario from "./AsistenciaUsuario.js"; 
 
-// Asociaciones
+// 1. Usuarios y Roles
 Usuario.belongsTo(Rol, { foreignKey: "id_rol" });
 Rol.hasMany(Usuario, { foreignKey: "id_rol" });
 
+// 2. Entrenadores y sus Horarios (EntrenadorHorario)
 Usuario.belongsToMany(HorarioLaboral, {
   through: EntrenadorHorario,
-  foreignKey: "id_usuario", // Clave en la tabla join que apunta a Usuario
-  otherKey: "id_horario",   // Clave en la tabla join que apunta a HorarioLaboral
-  as: "horarios" // Nombre del alias para consultar
+  foreignKey: "id_usuario",
+  otherKey: "id_horario",
+  as: "horarios" 
 });
 HorarioLaboral.belongsToMany(Usuario, {
   through: EntrenadorHorario,
@@ -26,41 +24,24 @@ HorarioLaboral.belongsToMany(Usuario, {
   as: "entrenadores"
 });
 
-Sesion.belongsTo(Usuario, { foreignKey: "id_entrenador", as: "Entrenador" });
-Usuario.hasMany(Sesion, { foreignKey: "id_entrenador", as: "SesionesEntrenadas" });
-
-Sesion.belongsTo(HorarioLaboral, { foreignKey: "id_horario_plantilla" });
-HorarioLaboral.hasMany(Sesion, { foreignKey: "id_horario_plantilla" });
-
-// Muchos-a-muchos
-Usuario.belongsToMany(Sesion, { through: "AsistenciaUsuario", foreignKey: "id_usuario" });
-Sesion.belongsToMany(Usuario, { through: "AsistenciaUsuario", foreignKey: "id_sesion" });
-/*Prueba
-Usuario.belongsToMany(TipoPagoMembresia, { through: "Usuario_Realiza_Pago", foreignKey: "id_usuario" });
-TipoPagoMembresia.belongsToMany(Usuario, { through: "Usuario_Realiza_Pago", foreignKey: "id_pago" });
-*/
-// Asociación: Un Rol tiene muchos Tipos de Membresía
+// 3. Membresías y Roles
 Rol.hasMany(TipoPagoMembresia, { foreignKey: "id_rol" });
 TipoPagoMembresia.belongsTo(Rol, { foreignKey: "id_rol" });
-/* FK de Usuario_Realiza_Pago
-Usuario.belongsToMany(TipoPagoMembresia, { through: Usuario_Realiza_Pago, foreignKey: "id_usuario" });
-TipoPagoMembresia.belongsToMany(Usuario, { through: Usuario_Realiza_Pago, foreignKey: "id_pago" });*/
 
+// 4. Pagos
 Usuario.hasMany(Usuario_Realiza_Pago, { foreignKey: "id_usuario" });
 Usuario_Realiza_Pago.belongsTo(Usuario, { foreignKey: "id_usuario" });
-
 TipoPagoMembresia.hasMany(Usuario_Realiza_Pago, { foreignKey: "id_pago" });
 Usuario_Realiza_Pago.belongsTo(TipoPagoMembresia, { foreignKey: "id_pago" });
 
+// 5. Asistencias 
+Usuario.hasMany(AsistenciaUsuario, { foreignKey: "id_usuario" }); 
+AsistenciaUsuario.belongsTo(Usuario, { foreignKey: "id_usuario", as: "Alumno" });
 
-// Ejemplo para Sesion (entrenador)
-Sesion.belongsTo(Usuario, { foreignKey: "id_entrenador", onDelete: "SET NULL" });
-Usuario.hasMany(Sesion, { foreignKey: "id_entrenador", onDelete: "CASCADE" });
+Usuario.hasMany(AsistenciaUsuario, { foreignKey: "id_entrenador" });
+AsistenciaUsuario.belongsTo(Usuario, { foreignKey: "id_entrenador", as: "Entrenador" });
 
-// Para Usuario_Realiza_Pago
-Sesion.belongsTo(Usuario, { foreignKey: "id_entrenador", onDelete: "SET NULL" });
-Usuario.hasMany(Sesion, { foreignKey: "id_entrenador", onDelete: "CASCADE" });
+HorarioLaboral.hasMany(AsistenciaUsuario, { foreignKey: "id_horario" });
+AsistenciaUsuario.belongsTo(HorarioLaboral, { foreignKey: "id_horario" });
 
-Usuario.hasMany(Usuario_Realiza_Pago, { foreignKey: "id_usuario", onDelete: "CASCADE" });
-
-export { Rol, HorarioLaboral, Usuario, Sesion, TipoPagoMembresia, Usuario_Realiza_Pago, EntrenadorHorario };
+export { Rol, HorarioLaboral, Usuario, TipoPagoMembresia, Usuario_Realiza_Pago, EntrenadorHorario, AsistenciaUsuario };

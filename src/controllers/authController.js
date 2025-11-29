@@ -4,7 +4,6 @@ import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import rol from "../models/Rol.js";
 import "../models/index.js";
-import Sesion from "../models/Sesion.js";
 import TipoPagoMembresia from "../models/TipoPagoMembresia.js";
 import Usuario_Realiza_Pago from "../models/Usuario_Realiza_Pago.js";
 import sequelize from "../config/database.js"; // Para transacciones
@@ -146,6 +145,7 @@ export const login = async (req, res) => {
         nombre: user.nombre,
         correo_electronico: user.correo_electronico,
         rol: user.rol.nombre,
+        id_rol: user.id_rol,
         fecha_vencimiento: user.fecha_vencimiento
       }
     });
@@ -212,26 +212,6 @@ export const eliminarUsuario = async (req, res) => {
 };
 
 // ====== ELIMINAR SESIÓN (ADMIN O ENTRENADOR) ======
-export const eliminarSesion = async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    if (!["Admin", "Entrenador"].includes(req.user.rol)) {
-      return res.status(403).json({ message: "Acceso denegado" });
-    }
-
-    const sesion = await Sesion.findByPk(id);
-    if (!sesion) {
-      return res.status(404).json({ message: "Sesión no encontrada" });
-    }
-
-    await sesion.destroy();
-    res.json({ message: "Sesión eliminada exitosamente" });
-  } catch (error) {
-    console.error("Error al eliminar sesión:", error);
-    res.status(500).json({ message: "Error en el servidor", error: error.message });
-  }
-};
 
 // ====== REALIZAR PAGO Y ACTUALIZAR TIEMPO RESTANTE ======
 export const realizarPago = async (req, res) => {

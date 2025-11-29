@@ -1,9 +1,13 @@
-export const verifyRole = (roles) => {
+export const verifyRole = (allowedRoles) => {
   return (req, res, next) => {
-    const userRole = req.user?.rol; // Asegúrate de incluir rol en JWT
-    if (!roles.includes(userRole)) {
-      return res.status(403).json({ message: "Acceso denegado" });
+    const userRole = req.user?.rol;
+    
+    if (!userRole || !allowedRoles.includes(userRole)) {
+      return res.status(403).json({ 
+        message: "Acceso denegado: rol no autorizado" 
+      });
     }
+    
     next();
   };
 };
